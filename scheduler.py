@@ -14,16 +14,16 @@ class Scheduler:
         if self.queue[at] is None:
             return
         for task in self.queue[at]:
-            task()
+            task(at)
         del self.queue[at]
     
 
 if __name__ == '__main__':
     s = Scheduler()
-    s.Enqueue(1, lambda: print('1.1'))
-    s.Enqueue(1, lambda: print('1.2'))
-    s.Enqueue(2, lambda: print('2'))
-    s.Enqueue(10, lambda: print('10'))
+    s.Enqueue(1, lambda t : print('1.1'))
+    s.Enqueue(1, lambda t : print('1.2'))
+    s.Enqueue(2, lambda t: print('2'))
+    s.Enqueue(10, lambda t: print('10'))
 
     for i in range(11):
         s.Execute(i)
