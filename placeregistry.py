@@ -23,4 +23,6 @@ class PlaceRegistry:
     
     def SetValue(self, index, value):
         self.places[index] = value
-        
+
+    def IsFull(self, index):
+        return self.places[index] is not None
