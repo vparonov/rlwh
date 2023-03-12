@@ -3,41 +3,39 @@ SCHEDULED = 1
 
 class Transition:
     def __init__(self, 
-                placeRegistry, 
                 scheduler, 
                 delayFn = lambda : 0, 
-                actionFn = lambda placeRegistry, inputPlaces, outputPlaces: None):
+                actionFn = lambda inputPlaces, outputPlaces: None):
         self.inputPlaces = []
         self.outputPlaces = []
-        self.placeRegistry = placeRegistry
         self.scheduler = scheduler
         self.delayFn = delayFn
         self.actionFn = actionFn
         self.state = NOT_SCHEDULED 
 
     # connections 
-    def AddInputPlace(self, placeID):
-        self.inputPlaces.append(placeID)
+    def AddInputPlace(self, place):
+        self.inputPlaces.append(place)
 
-    def AddOutputPlace(self, placeID):
-        self.outputPlaces.append(placeID)    
+    def AddOutputPlace(self, place):
+        self.outputPlaces.append(place)    
 
-    def ConnectPlaces(self, inputPlaceID, outputPlaceID):
-        self.AddInputPlace(inputPlaceID)
-        self.AddOutputPlace(outputPlaceID)
+    def ConnectPlaces(self, inputplace, outputplace):
+        self.AddInputPlace(inputplace)
+        self.AddOutputPlace(outputplace)
 
     # transactions
 
     def IsEnabled(self):
-        for inputPlaceID in self.inputPlaces:
-            if not self.placeRegistry[inputPlaceID].IsEmpty():
+        for inputplace in self.inputPlaces:
+            if not inputplace.IsEmpty():
                 return True
         return False
 
     def ScheduleExecute(self, currentTime):
         def action(executionTime):
             print(f"Executing at {executionTime}")
-            self.actionFn(self.placeRegistry, self.inputPlaces, self.outputPlaces)
+            self.actionFn(self.inputPlaces, self.outputPlaces)
             self.state = NOT_SCHEDULED
 
         if self.state == SCHEDULED:
@@ -46,19 +44,18 @@ class Transition:
         self.scheduler.Enqueue(currentTime + self.delayFn(), task = action)
 
 if __name__ == "__main__":
-    from placeregistry import PlaceRegistry
+    from place import Place
     from scheduler import Scheduler
     from transitionfactory import TransitionFactory
 
-    registry = PlaceRegistry()
     scheduler = Scheduler()
 
-    transitionFactory = TransitionFactory(registry, scheduler)
+    transitionFactory = TransitionFactory(scheduler)
 
-    def testAction_d(placeRegistry, inputPlaces, outputPlaces):
+    def testAction_d(inputPlaces, outputPlaces):
         print('delayed')
 
-    def testAction_0(placeRegistry, inputPlaces, outputPlaces):
+    def testAction_0(inputPlaces, outputPlaces):
         print('not delayed')
 
     transition = transitionFactory.MakeTransition(
@@ -69,11 +66,11 @@ if __name__ == "__main__":
                     delayFn = lambda : 0, 
                     actionFn = testAction_0)
 
-    p1 = registry.AddPlace()
-    p2 = registry.AddPlace()
-    p3 = registry.AddPlace()
+    p1 = Place(1)
+    p2 = Place(1)
+    p3 = Place(1)
 
-    registry[p1].Add('A')
+    p1.Add('A')
    
     transition.ConnectPlaces(p1, p2)
     transition0.ConnectPlaces(p2, p3)
