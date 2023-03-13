@@ -24,10 +24,14 @@ class Conveyor:
             if self.IsStopped():
                 return 
             
-            inputPlace = inputPlaces[0]
             outputPlace = outputPlaces[0]
 
-            if outputPlace.IsEmpty():
+            if outputPlace.IsDisabled():
+                return 
+            
+            inputPlace = inputPlaces[0]
+            
+            if outputPlace.IsEmpty() :
                 v = inputPlace.Remove()
                 outputPlace.Add(v)
 
@@ -119,14 +123,17 @@ if __name__ == "__main__":
 
     c.Connect(c2.FirstPlace())
 
+    c2.Stop()
     c.PutValue('A')
     print(c)
 
     for t in range(25):
        
-        print(t, c, c2) 
+        if t == 22:
+            c2.Start()
         scheduler.Execute(t)    
         c.ScheduleTransitions(scheduler, t)
         c2.ScheduleTransitions(scheduler, t)
         scheduler.Execute(t) 
+        print(t, c, c2) 
 
