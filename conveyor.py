@@ -10,7 +10,7 @@ class Conveyor:
         self.capacity = capacity
         self.delayFn = lambda: delay
         self.name = name
-
+        self.enabled = True
         self.places = []
         self.transitions = []
 
@@ -19,6 +19,9 @@ class Conveyor:
     def make(self):
         def conveyorTransitionFn(inputPlaces, outputPlaces):
             if len(outputPlaces) == 0:
+                return 
+            
+            if self.IsStopped():
                 return 
             
             inputPlace = inputPlaces[0]
@@ -48,9 +51,34 @@ class Conveyor:
         
         self.transitions[-1].AddOutputPlace(nextPlace) 
 
+    def ScheduleTransitions(self, scheduler, t):
+        for transition in self.Transitions():
+            if transition.IsEnabled():
+                transition.ScheduleExecute(scheduler, t)
+
+    def FirstPlace(self):
+        return self.places[0]
+    
+    def Stop(self):
+        self.enabled = False
+        self.places[0].Disable()
+
+    def Start(self):
+        self.enabled = True
+        self.places[0].Enable()
+ 
+    def IsStopped(self):
+        return self.enabled == False
+    
+    def Reset(self):
+        for place in self.places:
+            if len(place) > 0:
+                place.Remove()
+        self.Start()
+
     def Transitions(self):
         return self.transitions
-    
+      
     def PutValue(self, value, where = BEGINNING):
         if where == BEGINNING:
             self.places[0].Add(value)
@@ -87,13 +115,18 @@ if __name__ == "__main__":
 
     c = Conveyor("c1", 10, 0)
 
+    c2 = Conveyor("c2", 10, 0)
+
+    c.Connect(c2.FirstPlace())
+
     c.PutValue('A')
     print(c)
 
     for t in range(25):
-        print(t, c) 
+       
+        print(t, c, c2) 
         scheduler.Execute(t)    
-        for transition in c.Transitions():
-            if transition.IsEnabled():
-                transition.ScheduleExecute(scheduler, t)
+        c.ScheduleTransitions(scheduler, t)
+        c2.ScheduleTransitions(scheduler, t)
         scheduler.Execute(t) 
+

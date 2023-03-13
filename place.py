@@ -2,6 +2,7 @@ class Place:
     
     def __init__(self, capacity = 1):
         self.capacity = capacity
+        self.disabled = False
         self.values = []
         
     def Add(self, value):
@@ -12,6 +13,15 @@ class Place:
     
     def Remove(self):
         return self.values.pop()
+    
+    def Disable(self):
+        self.disabled = True
+
+    def Enable(self):
+        self.disabled = False
+    
+    def IsDisabled(self):
+        return self.disabled == True
     
     def IsEmpty(self):
         return len(self.values) == 0
