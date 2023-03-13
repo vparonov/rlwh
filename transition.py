@@ -3,12 +3,10 @@ SCHEDULED = 1
 
 class Transition:
     def __init__(self, 
-                scheduler, 
                 delayFn = lambda : 0, 
                 actionFn = lambda inputPlaces, outputPlaces: None):
         self.inputPlaces = []
         self.outputPlaces = []
-        self.scheduler = scheduler
         self.delayFn = delayFn
         self.actionFn = actionFn
         self.state = NOT_SCHEDULED 
@@ -20,6 +18,9 @@ class Transition:
     def AddOutputPlace(self, place):
         self.outputPlaces.append(place)    
 
+    def CountPlaces(self):
+        return len(self.inputPlaces), len(self.outputPlaces)
+    
     def ConnectPlaces(self, inputplace, outputplace):
         self.AddInputPlace(inputplace)
         self.AddOutputPlace(outputplace)
@@ -32,7 +33,7 @@ class Transition:
                 return True
         return False
 
-    def ScheduleExecute(self, currentTime):
+    def ScheduleExecute(self, scheduler, currentTime):
         def action(executionTime):
             print(f"Executing at {executionTime}")
             self.actionFn(self.inputPlaces, self.outputPlaces)
@@ -41,52 +42,87 @@ class Transition:
         if self.state == SCHEDULED:
             return
         self.state = SCHEDULED
-        self.scheduler.Enqueue(currentTime + self.delayFn(), task = action)
+        scheduler.Enqueue(currentTime + self.delayFn(), task = action)
 
 if __name__ == "__main__":
     from place import Place
     from scheduler import Scheduler
-    from transitionfactory import TransitionFactory
-
+   
     scheduler = Scheduler()
 
-    transitionFactory = TransitionFactory(scheduler)
-
     def testAction_d(inputPlaces, outputPlaces):
-        print('delayed')
+        inputPlace = inputPlaces[0]
+        outputPlace = outputPlaces[0]
 
-    def testAction_0(inputPlaces, outputPlaces):
-        print('not delayed')
+        if outputPlace.IsEmpty():
+            v = inputPlace.Remove()
+            outputPlace.Add(v)
 
-    transition = transitionFactory.MakeTransition(
+    transitions = []
+    transition = Transition(
                     delayFn = lambda : 10, 
                     actionFn = testAction_d)
 
-    transition0 = transitionFactory.MakeTransition(
+    transition0 = Transition(
                     delayFn = lambda : 0, 
-                    actionFn = testAction_0)
+                    actionFn = testAction_d)
+
+    transitions.append(transition)
+    transitions.append(transition0)
 
     p1 = Place(1)
     p2 = Place(1)
     p3 = Place(1)
 
     p1.Add('A')
-   
+    p2.Add('B')
+
     transition.ConnectPlaces(p1, p2)
     transition0.ConnectPlaces(p2, p3)
   
     for t in range(25):
         print(t) 
         scheduler.Execute(t)    
-        for transition in transitionFactory.GetTransitions():
+        for transition in transitions:
             if transition.IsEnabled():
-                transition.ScheduleExecute(t)
+                transition.ScheduleExecute(scheduler, t)
         scheduler.Execute(t)    
+        print(p1, p2, p3)
+
+# a | b | c
+
+# v = a[0]
+# t.group().remove(a).set(b, v).end()
+
+# v = b[0]
+# t.remove(b)
+# t.set(c, v)
+
+# groups[g1].append(a)
+# groups[g1].append(b)
+
+# ops[a].AddRemoveCmd(g1)
+# ops[b].AddSetCmd(v, g1)
+
+# groups[g2].append(b)
+# groups[g2].append(c)
+
+# ops[b].AddRemoveCmd(g2)
+# ops[c].AddSetCmd(v, g2)
 
 
-#           1         2 
-# 012345678901234567890123456789
-# p 
-#  x
-#   p
-#    x 
+# groups[g1] = [a, b]
+# groups[g2] = [b, c]
+
+# ops[a] = {
+#     'RemoveCmds': ['g1'],
+# }
+
+# ops[b] = {
+#     'RemoveCmds': ['g2'],
+#     'SetCmds': [(v, 'g1')],
+# }
+
+# ops[c] = {
+#     'SetCmds': [(v, 'g2')],
+# }
