@@ -42,7 +42,7 @@ class Source:
           
             if phase == PHASE_MAIN:
                 # during the main phase, try to put the value only if the output place is empty
-                if outputPlace.IsEmpty() :
+                if not outputPlace.IsFull() :
                     v = inputPlace.Remove()
                     outputPlace.Add(v)
                     return FINISHED
@@ -78,6 +78,7 @@ class Source:
 if __name__ == "__main__":
     from conveyor import Conveyor
     from scheduler import Scheduler
+    from sink import Sink
  
     class simpleSource:
         def __init__(self):
@@ -96,9 +97,11 @@ if __name__ == "__main__":
                 
     evenH = simpleSource()
     s = Source('S', ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J'], evenH)
-    c = Conveyor('C1', 10, 1)
+    c = Conveyor('C1', 10, 0)
+    sink = Sink('SINK')
 
     s.Connect(c.FirstPlace())
+    c.Connect(sink.FirstPlace())
 
     try:
         for t in range(25):
@@ -106,7 +109,8 @@ if __name__ == "__main__":
             iterations = scheduler.Execute(t)    
             s.ScheduleTransitions(scheduler, t)
             c.ScheduleTransitions(scheduler, t)
+            sink.ScheduleTransitions(scheduler, t)
             iterations += scheduler.Execute(t) 
-            print(iterations, t, c) 
+            print(iterations, t, c, sink) 
     except Exception as e:
         print(t, e)

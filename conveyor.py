@@ -35,7 +35,7 @@ class Conveyor:
             
             inputPlace = inputPlaces[0]
             
-            if outputPlace.IsEmpty() :
+            if not outputPlace.IsFull() :
                 v = inputPlace.Remove()
                 outputPlace.Add(v)
                 return FINISHED
@@ -95,7 +95,7 @@ class Conveyor:
             self.places[0].Add(value)
         elif where == ANYWHERE:
             for place in self.places:
-                if place.IsEmpty():
+                if not place.IsFull():
                     place.Add(value)
                     break
         else:

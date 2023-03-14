@@ -30,7 +30,10 @@ class Place:
     
     def IsEmpty(self):
         return len(self.values) == 0
-
+    
+    def IsFull(self):
+        return len(self.values) == self.capacity
+    
     def __getitem__(self, key):
         return self.values[key]
     
