@@ -96,14 +96,17 @@ if __name__ == "__main__":
                 
     evenH = simpleSource()
     s = Source('S', ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J'], evenH)
-    c = Conveyor('C1', 10, 0)
+    c = Conveyor('C1', 10, 1)
 
     s.Connect(c.FirstPlace())
 
-    for t in range(25):
-        evenH.SetTime(t)
-        iterations = scheduler.Execute(t)    
-        s.ScheduleTransitions(scheduler, t)
-        c.ScheduleTransitions(scheduler, t)
-        iterations += scheduler.Execute(t) 
-        print(iterations, t, c) 
+    try:
+        for t in range(25):
+            evenH.SetTime(t)
+            iterations = scheduler.Execute(t)    
+            s.ScheduleTransitions(scheduler, t)
+            c.ScheduleTransitions(scheduler, t)
+            iterations += scheduler.Execute(t) 
+            print(iterations, t, c) 
+    except Exception as e:
+        print(t, e)
