@@ -18,12 +18,14 @@ class Scheduler:
 
     def Execute(self, at):
         if self.queue[at] is None:
-            return
+            return 0
         
+        iterations = 0 
         someFinished = True
         while someFinished:
             someFinished = False 
             for task in self.queue[at]:
+                iterations+=1
                 result = task(at, PHASE_MAIN)
                 if result == FINISHED:
                     someFinished = True
@@ -33,12 +35,14 @@ class Scheduler:
         while someFinished:
             someFinished = False 
             for task in self.queue[at]:
+                iterations+=1
                 result = task(at, PHASE_SECONDARY)
                 if result == FINISHED:
                     someFinished = True
                     self.queue[at].remove(task)
         
         del self.queue[at]
+        return iterations
     
 
 if __name__ == '__main__':

@@ -63,9 +63,9 @@ class Conveyor:
         self.transitions[-1].AddOutputPlace(nextPlace) 
 
     def ScheduleTransitions(self, scheduler, t):
-        for transition in self.Transitions():
-            if transition.IsEnabled():
-                transition.ScheduleExecute(scheduler, t)
+        for i in range(len(self.transitions)-1, -1, -1):
+            if self.transitions[i].IsEnabled():
+                self.transitions[i].ScheduleExecute(scheduler, t)
 
     def FirstPlace(self):
         return self.places[0]
