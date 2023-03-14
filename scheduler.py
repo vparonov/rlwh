@@ -1,5 +1,11 @@
 from collections import defaultdict
 
+BLOCKED = -1
+FINISHED = 1
+
+PHASE_MAIN = 0
+PHASE_SECONDARY = 1
+
 class Scheduler:
     def __init__(self):
         self.queue = defaultdict(lambda: None)
@@ -13,8 +19,25 @@ class Scheduler:
     def Execute(self, at):
         if self.queue[at] is None:
             return
-        for task in self.queue[at]:
-            task(at)
+        
+        someFinished = True
+        while someFinished:
+            someFinished = False 
+            for task in self.queue[at]:
+                result = task(at, PHASE_MAIN)
+                if result == FINISHED:
+                    someFinished = True
+                    self.queue[at].remove(task)
+        
+        someFinished = True
+        while someFinished:
+            someFinished = False 
+            for task in self.queue[at]:
+                result = task(at, PHASE_SECONDARY)
+                if result == FINISHED:
+                    someFinished = True
+                    self.queue[at].remove(task)
+        
         del self.queue[at]
     
 

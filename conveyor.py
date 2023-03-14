@@ -1,5 +1,6 @@
 from place import Place
 from transition import Transition
+from scheduler import BLOCKED, FINISHED, PHASE_SECONDARY
 
 BEGINNING = 0
 END = 1
@@ -17,23 +18,29 @@ class Conveyor:
         self.make()
 
     def make(self):
-        def conveyorTransitionFn(inputPlaces, outputPlaces):
+        def conveyorTransitionFn(inputPlaces, outputPlaces, phase):
+            if phase == PHASE_SECONDARY:
+                return BLOCKED
+            
             if len(outputPlaces) == 0:
-                return 
+                return FINISHED
             
             if self.IsStopped():
-                return 
+                return FINISHED
             
             outputPlace = outputPlaces[0]
 
             if outputPlace.IsDisabled():
-                return 
+                return FINISHED
             
             inputPlace = inputPlaces[0]
             
             if outputPlace.IsEmpty() :
                 v = inputPlace.Remove()
                 outputPlace.Add(v)
+                return FINISHED
+            else:
+                return BLOCKED
 
         prevTransition = None
         for _ in range(self.capacity):
@@ -98,13 +105,15 @@ class Conveyor:
         if where == BEGINNING:
             return self.places[0].Remove()
         elif where == END:
-            return self.places[0].Remove()
+            return self.places[-1].Remove()
         elif where == ANYWHERE:
             for place in self.places:
                 if not place.IsEmpty():
                     return place.Remove()
         else:
             raise Exception(f"Invalid where {where}")
+        
+        return None
 
     def __str__(self):
         s = f'{self.name}:'

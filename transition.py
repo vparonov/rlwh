@@ -4,7 +4,7 @@ SCHEDULED = 1
 class Transition:
     def __init__(self, 
                 delayFn = lambda : 0, 
-                actionFn = lambda inputPlaces, outputPlaces: None):
+                actionFn = lambda inputPlaces, outputPlaces, phase: None):
         self.inputPlaces = []
         self.outputPlaces = []
         self.delayFn = delayFn
@@ -34,10 +34,10 @@ class Transition:
         return False
 
     def ScheduleExecute(self, scheduler, currentTime):
-        def action(executionTime):
-            print(f"Executing at {executionTime}")
-            self.actionFn(self.inputPlaces, self.outputPlaces)
+        def action(executionTime, phase):
+            res = self.actionFn(self.inputPlaces, self.outputPlaces, phase)
             self.state = NOT_SCHEDULED
+            return res 
 
         if self.state == SCHEDULED:
             return

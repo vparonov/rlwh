@@ -10,10 +10,15 @@ class Place:
             raise ValueError("Place is full")
         
         self.values.append(value)
-    
     def Remove(self):
-        return self.values.pop()
+        return self.values.pop(0)
     
+    def Clear(self):
+        self.values = []
+
+    def SetValues(self, values):
+        self.values = values
+
     def Disable(self):
         self.disabled = True
 
