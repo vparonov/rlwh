@@ -18,7 +18,7 @@ class Conveyor:
         self.make()
 
     def make(self):
-        def conveyorTransitionFn(inputPlaces, outputPlaces, phase):
+        def conveyorTransitionFn(inputPlaces, outputPlaces, currentTime, phase):
             if phase == PHASE_SECONDARY:
                 return BLOCKED
             

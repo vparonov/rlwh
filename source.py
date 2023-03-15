@@ -16,7 +16,7 @@ class Source:
         self.Reset(values)
 
     def make(self):
-        def sourceTransitionFn(inputPlaces, outputPlaces, phase):
+        def sourceTransitionFn(inputPlaces, outputPlaces, currentTime, phase):
             if len(outputPlaces) == 0:
                 return FINISHED
 
@@ -27,7 +27,7 @@ class Source:
             
             # sourceFn is callable (i.e. not nessecarily a function... more probably an instance of a class)
             # all external dependencies are captures in the sourceFn object
-            action = self.sourceFn()
+            action = self.sourceFn(currentTime)
 
             if action == SKIP:
                 return FINISHED
@@ -69,6 +69,7 @@ class Source:
 
     def Reset(self, values):
         self.inputPlace.SetValues(values) 
+        self.currentAction = None 
 
     def ScheduleTransitions(self, scheduler, t):
         if self.transition.IsEnabled():
@@ -82,13 +83,11 @@ if __name__ == "__main__":
  
     class simpleSource:
         def __init__(self):
-            self.t = 0  
+            pass  
 
-        def SetTime(self, t):
-            self.t = t 
-
-        def __call__(self):
-            if self.t % 1 == 0:
+        def __call__(self, currentTime):
+            print(f'current time: {currentTime}')
+            if currentTime % 1 == 0:
                 return FIFO
             else:
                 return SKIP
@@ -105,8 +104,11 @@ if __name__ == "__main__":
 
     try:
         for t in range(25):
-            evenH.SetTime(t)
             iterations = scheduler.Execute(t)    
+            # 
+            # here agents interact with the system
+            #
+            # 
             s.ScheduleTransitions(scheduler, t)
             c.ScheduleTransitions(scheduler, t)
             sink.ScheduleTransitions(scheduler, t)

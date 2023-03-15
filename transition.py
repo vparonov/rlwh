@@ -35,7 +35,7 @@ class Transition:
 
     def ScheduleExecute(self, scheduler, currentTime):
         def action(executionTime, phase):
-            res = self.actionFn(self.inputPlaces, self.outputPlaces, phase)
+            res = self.actionFn(self.inputPlaces, self.outputPlaces, executionTime, phase)
             self.state = NOT_SCHEDULED
             return res 
 
