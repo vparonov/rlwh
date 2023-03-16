@@ -1,3 +1,5 @@
+import numpy as np
+
 from place import Place
 from transition import Transition
 from scheduler import BLOCKED, FINISHED, PHASE_SECONDARY
@@ -67,6 +69,13 @@ class Conveyor:
             if self.transitions[i].IsEnabled():
                 self.transitions[i].ScheduleExecute(scheduler, t)
 
+    def State(self):
+        state = np.asarray([1 if not p.IsEmpty() else 0 for p in self.places])
+        return state
+    
+    def Capacity(self):
+        return self.capacity
+    
     def FirstPlace(self):
         return self.places[0]
     

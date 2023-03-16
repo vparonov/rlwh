@@ -1,3 +1,5 @@
+import numpy as np
+
 from place import Place
 from transition import Transition
 from scheduler import BLOCKED, FINISHED, PHASE_MAIN, PHASE_SECONDARY
@@ -59,7 +61,13 @@ class Source:
         self.transition = Transition(lambda: 0, sourceTransitionFn)
         self.transition.AddInputPlace(self.inputPlace)
 
-
+    def State(self):
+        state = np.asarray([len(self.inputPlace)])
+        return state
+    
+    def Capacity(self):
+        return 1  
+    
     def Connect(self, nextPlace):
         _, countOutputPlaces = self.transition.CountPlaces()
         if countOutputPlaces > 0:

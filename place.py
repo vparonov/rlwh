@@ -17,7 +17,7 @@ class Place:
         self.values = []
 
     def SetValues(self, values):
-        self.values = values
+        self.values = values.copy()
 
     def Disable(self):
         self.disabled = True
