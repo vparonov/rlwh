@@ -127,7 +127,7 @@ if __name__ == "__main__":
     items_even = []
     items_odd  = []
     items_all  = []
-    for i in range(10):
+    for i in range(1):
         items_even.append(Box(f'E{i}', 3))
         items_odd.append(Box(f'O{i}', 3))
         items_all.append(Box(f'A{i}', 3))
@@ -166,8 +166,9 @@ if __name__ == "__main__":
         if not ok:
             print(e)
             break
-        print(t, cs1, cs2, cs3, merger, c1, sink)
-    
+        for c in [cs1, cs2, cs3, merger, c1, sink]:
+            print(c)
+
         if states[-1] == (len(items_even) + len(items_odd) + len(items_all)):
             print('finished')
             break 
