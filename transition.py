@@ -1,3 +1,5 @@
+from scheduler import FINISHED
+
 NOT_SCHEDULED = 0
 SCHEDULED = 1
 
@@ -36,7 +38,8 @@ class Transition:
     def ScheduleExecute(self, scheduler, currentTime):
         def action(executionTime, phase):
             res = self.actionFn(self.inputPlaces, self.outputPlaces, executionTime, phase)
-            self.state = NOT_SCHEDULED
+            if res == FINISHED:
+                self.state = NOT_SCHEDULED
             return res 
 
         if self.state == SCHEDULED:

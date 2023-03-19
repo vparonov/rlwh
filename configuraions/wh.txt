@@ -1,0 +1,13 @@
+source : source  
+c1 
+c2 
+d1 
+d2
+s1
+s2 
+c3
+sink : sink  
+
+
+
+p -> p -> p -> p -> p -> p -> p -> p 

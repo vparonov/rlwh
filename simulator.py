@@ -11,7 +11,6 @@ class Simulator:
     def Step(self,  t, components):
         try:
             self.t += 1
-            iterations = self.scheduler.Execute(t)  
             for c in components:  
                 c.ScheduleTransitions(self.scheduler, t)
             iterations += self.scheduler.Execute(t) 

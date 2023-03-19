@@ -41,16 +41,20 @@ class Scheduler:
                     someFinished = True
                     self.queue[at].remove(task)
         
+        # all blocked tasks are rescheduled for the next time slot
+        for task in self.queue[at]:
+            self.Enqueue(at+1, task)
+
         del self.queue[at]
         return iterations
     
 
 if __name__ == '__main__':
     s = Scheduler()
-    s.Enqueue(1, lambda t : print('1.1'))
-    s.Enqueue(1, lambda t : print('1.2'))
-    s.Enqueue(2, lambda t: print('2'))
-    s.Enqueue(10, lambda t: print('10'))
+    s.Enqueue(1, lambda t,p : FINISHED)
+    s.Enqueue(1, lambda t,p : FINISHED)
+    s.Enqueue(2, lambda t,p: FINISHED)
+    s.Enqueue(10, lambda t,p: FINISHED)
 
     for i in range(11):
         s.Execute(i)

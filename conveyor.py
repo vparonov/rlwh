@@ -79,6 +79,9 @@ class Conveyor:
     def FirstPlace(self):
         return self.places[0]
     
+    def Places(self):
+        return self.places
+    
     def Stop(self):
         self.enabled = False
         self.places[0].Disable()
