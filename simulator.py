@@ -9,11 +9,12 @@ class Simulator:
         self.t = 0 
 
     def Step(self,  t, components):
+        iterations = 0 
         try:
             self.t += 1
             for c in components:  
                 c.ScheduleTransitions(self.scheduler, t)
-            iterations += self.scheduler.Execute(t) 
+            iterations = self.scheduler.Execute(t) 
         except Exception as e:
             return False, iterations, e 
         

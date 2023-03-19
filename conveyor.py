@@ -38,8 +38,9 @@ class Conveyor:
             inputPlace = inputPlaces[0]
             
             if not outputPlace.IsFull() :
-                v = inputPlace.Remove()
-                outputPlace.Add(v)
+                if not inputPlace.IsEmpty():
+                    v = inputPlace.Remove()
+                    outputPlace.Add(v)
                 return FINISHED
             else:
                 return BLOCKED
