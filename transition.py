@@ -23,6 +23,9 @@ class Transition:
     def CountPlaces(self):
         return len(self.inputPlaces), len(self.outputPlaces)
     
+    def SetActionFn(self, actionFn):
+        self.actionFn = actionFn
+        
     def ConnectPlaces(self, inputplace, outputplace):
         self.AddInputPlace(inputplace)
         self.AddOutputPlace(outputplace)

@@ -9,9 +9,10 @@ END = 1
 ANYWHERE = -1
 
 class Conveyor:
-    def __init__(self, name, capacity, delay=0):
+    def __init__(self, name, capacity, delay=0, exitPredicateFn = lambda p: True):
         self.capacity = capacity
         self.delayFn = lambda: delay
+        self.exitPredicateFn = exitPredicateFn
         self.name = name
         self.enabled = True
         self.places = []
@@ -45,6 +46,18 @@ class Conveyor:
             else:
                 return BLOCKED
 
+        def lastTransitionFn(inputPlaces, outputPlaces, currentTime, phase):
+            # the last transition is not moving the item to the output place
+            # if the exitPredicateFn returns false
+            # this is used to model the A-Frame behavior
+            inputPlace = inputPlaces[0]
+            if not inputPlace.IsEmpty(): 
+                v = inputPlace[0]
+                if not self.exitPredicateFn(v):
+                    return FINISHED
+                
+            return conveyorTransitionFn(inputPlaces, outputPlaces, currentTime, phase)
+
         prevTransition = None
         for _ in range(self.capacity):
             newPlace  = Place(capacity=1)
@@ -57,6 +70,8 @@ class Conveyor:
                 prevTransition.AddOutputPlace(newPlace)
 
             prevTransition = newTransition
+        #the last transition has augmented transition action 
+        self.transitions[-1].SetActionFn(lastTransitionFn)
 
     def Connect(self, nextPlace):
         _, countOutputPlaces = self.transitions[-1].CountPlaces()
