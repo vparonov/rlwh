@@ -2,13 +2,28 @@ from transition import Transition
 from place import Place
 from scheduler import BLOCKED, FINISHED, PHASE_SECONDARY
 
-#            input         output          
-#          transition    transition        
-#              ┌┐     .     ┌┐ *actionFn             
-#          ───▶││───▶( )───▶││───▶         
-#    source    └┘     '     └┘  return to  
-#   conveyor                    conveyor  
-
+#      return to
+#      conveyor    ┌┐             ┌┐              ┌┐
+#          .─.     ││     .─.     ││      .─.     ││
+#     ───▶(   )───▶││───▶(   )───▶││...─▶(   )───▶││
+#          `─'     ││     `─'     ││      `─'     ││
+#           ▲      └┘      ▲      └┘      ▲       └┘
+#           └──────────┐   │   ┌───....───┘
+#                     ┌┴───┴───┴┐ output transition 
+#                     └────▲────┘     
+#                         .┴.
+#                        (   )
+#                         `▲'
+#                     ┌────┴────┐input transition
+#                     └─▲──▲──▲─┘      
+#           ┌───────────┘  │  └────....────┐
+#           │      ┌┐      │      ┌┐       │      ┌┐
+#          .─.     ││     .─.     ││      .─.     ││
+#     ───▶(   )───▶││───▶(   )───▶││...─▶(   )───▶││
+#          `─'     ││     `─'     ││      `─'     ││
+#                  └┘             └┘              └┘
+#    source
+#   conveyor
 class Agent:
     def __init__(self, name, delayFn, actionFn):
         self.name = name
