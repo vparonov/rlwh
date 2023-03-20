@@ -11,6 +11,9 @@ class Box:
     def Pick(self, station):
         self.pickedMask |= (1 << (station-1))
 
+    def Id(self):
+        return self.id
+    
     def Reset(self):
         self.pickedMask = 0
 

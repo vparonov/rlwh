@@ -102,7 +102,11 @@ class Agent:
     def State(self):
         state = np.asarray([0 if self.place.IsEmpty() else 1])
         return state
-
+    
+    def DeepState(self):
+        state = np.asarray([0 if self.place.IsEmpty() else self.place[0].Id()])
+        return state
+    
     def Capacity(self):
         return 1
 
@@ -195,7 +199,7 @@ if __name__ == "__main__":
             
         items = []
         for i in range(10):
-            items.append(Box(i, 3))
+            items.append(Box(i+1, 3))
 
         agent = Agent("agent", 
                     delayFn = lambda: 5, 
@@ -221,9 +225,9 @@ if __name__ == "__main__":
         for t in range(200):
             ok, iterations, e, = simulator.Step(t, components)
             #states = [np.sum(c.State())/c.Capacity() for c in components]
-            states = components[1].State()
+            states = components[1].DeepState()
             for c in components[2:-1]:
-                states = np.hstack((states, c.State()))
+                states = np.hstack((states, c.DeepState()))
             print(states)
             allStates = np.vstack((allStates, states))
             if not ok:

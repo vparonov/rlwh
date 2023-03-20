@@ -52,6 +52,9 @@ class Merger:
         state = np.asarray([len(self.inputPlace)])
         return state
     
+    def DeepState(self):
+        raise NotImplementedError
+    
     def Capacity(self):
         return self.capacity
     

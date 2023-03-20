@@ -72,7 +72,11 @@ class Diverter:
     def State(self):
         state = np.asarray([1 if not self.inputPlace.IsEmpty() else 0 ])
         return state
-    
+
+    def DeepState(self):
+        state = np.asarray([0 if self.inputPlace.IsEmpty() else self.inputPlace[0].Id()])
+        return state
+   
     def Capacity(self):
         return 1
     

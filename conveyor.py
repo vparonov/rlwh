@@ -89,6 +89,10 @@ class Conveyor:
         state = np.asarray([1 if not p.IsEmpty() else 0 for p in self.places])
         return state
     
+    def DeepState(self):
+        state = np.asarray([0 if p.IsEmpty() else p[0].Id()  for p in self.places])
+        return state
+    
     def Capacity(self):
         return self.capacity
     
@@ -117,31 +121,6 @@ class Conveyor:
 
     def Transitions(self):
         return self.transitions
-      
-    def PutValue(self, value, where = BEGINNING):
-        if where == BEGINNING:
-            self.places[0].Add(value)
-        elif where == ANYWHERE:
-            for place in self.places:
-                if not place.IsFull():
-                    place.Add(value)
-                    break
-        else:
-            raise Exception(f"Invalid where {where}")
-        
-    def GetValue(self, where = BEGINNING):
-        if where == BEGINNING:
-            return self.places[0].Remove()
-        elif where == END:
-            return self.places[-1].Remove()
-        elif where == ANYWHERE:
-            for place in self.places:
-                if not place.IsEmpty():
-                    return place.Remove()
-        else:
-            raise Exception(f"Invalid where {where}")
-        
-        return None
 
     def __str__(self):
         s = f'{self.name}:'
