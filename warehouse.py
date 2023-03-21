@@ -63,3 +63,6 @@ for conn in data['connections']:
         component.Connect(source, returnTo)
     else:
         print('Connections. Unknown component type:'+ type)
+
+    
+    
