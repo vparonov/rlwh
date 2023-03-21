@@ -27,8 +27,6 @@ class Source:
             if outputPlace.IsDisabled():
                 return FINISHED
             
-            # sourceFn is callable (i.e. not nessecarily a function... more probably an instance of a class)
-            # all external dependencies are captures in the sourceFn object
             action = self.sourceFn(currentTime)
 
             if action == SKIP:

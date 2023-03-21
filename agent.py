@@ -1,3 +1,5 @@
+import numpy as np
+
 from transition import Transition
 from place import Place
 from scheduler import BLOCKED, FINISHED, PHASE_SECONDARY
@@ -198,20 +200,18 @@ if __name__ == "__main__":
         components = [source, c1, s01, agent, sink]
 
         for t in range(400):
-            ok, iterations, e, = simulator.Step(t, components)
-            states = [np.sum(c.State())/c.Capacity() for c in components]
-            print(states)
+            try:
+                simulator.Step(t, components)
+                states = [np.sum(c.State())/c.Capacity() for c in components]
+                print(states)
+                print(t, c1, s01, agent, sink)
 
-            if not ok:
-                print(e)
-                break
-    
-            print(t, c1, s01, agent, sink)
-
-            if states[-1] == len(items):
-                print('finished')
+                if states[-1] == len(items):
+                    print('finished')
+                    break 
+            except Exception as e:
+                print(f'error at t = {t} {e}')
                 break 
-    
     def test2():
         simulator = Simulator()
 
@@ -271,21 +271,20 @@ if __name__ == "__main__":
         
         allStates = np.zeros(17)
         for t in range(400):
-            ok, iterations, e, = simulator.Step(t, components)
-            #states = [np.sum(c.State())/c.Capacity() for c in components]
-            states = components[1].DeepState()
-            for c in components[2:-1]:
-                states = np.hstack((states, c.DeepState()))
-            print(states)
-            allStates = np.vstack((allStates, states))
-            if not ok:
-                print(e)
-                break
-    
-            #print(t, c0, c1, c2, agent, sink)
-
-            if components[-1].State() == len(items):
-                print('finished')
+            try:
+                simulator.Step(t, components)
+                #states = [np.sum(c.State())/c.Capacity() for c in components]
+                states = components[1].DeepState()
+                for c in components[2:-1]:
+                    states = np.hstack((states, c.DeepState()))
+                print(states)
+                allStates = np.vstack((allStates, states))
+            
+                if components[-1].State() == len(items):
+                    print('finished')
+                    break 
+            except Exception as e:
+                print(f'exception at t = {t} {e}')
                 break 
         np.save('data/states.npy', allStates)
     

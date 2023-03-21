@@ -6,19 +6,14 @@ class Simulator:
 
     def Reset(self):
         self.scheduler = Scheduler()
-        self.t = 0 
 
     def Step(self,  t, components):
         iterations = 0 
-        try:
-            self.t += 1
-            for c in components:  
-                c.ScheduleTransitions(self.scheduler, t)
-            iterations = self.scheduler.Execute(t) 
-        except Exception as e:
-            return False, iterations, e 
-        
-        return True, iterations, None
+        for c in components:  
+            c.ScheduleTransitions(self.scheduler, t)
+        iterations = self.scheduler.Execute(t) 
+
+        return iterations
 
 if __name__ == "__main__":
     import numpy as np

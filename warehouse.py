@@ -8,7 +8,7 @@ from agent import Agent
 from sink import Sink
 from source import Source, FIFO, SKIP
 from box import BoxListFromFile
-
+from simulator import Simulator
 
 class Warehouse:
     def __init__(self, name, fileName, datadir, randomFileSelect = False):
@@ -22,14 +22,17 @@ class Warehouse:
             self.datafiles = []
         
         self.action_space = ActionSpace([SKIP, FIFO])
+        self.simulator = Simulator()
         self.build(fileName)
 
     def build(self, fileName):
         with open(fileName) as f:
             data = json.load(f)
         components = {} 
+        
+        self.strategy = ActionStrategy()
 
-        components['source'] =  (Source(name='source', values = [], sourceFn = ActionSpace([SKIP, FIFO])), 'source', -1)
+        components['source'] =  (Source(name='source', values = [], sourceFn = self.strategy), 'source', -1)
         components['sink'] = (Sink('sink'), 'sink', 999999999)
         
         self.stateSize = 2 
@@ -133,6 +136,37 @@ class Warehouse:
         self.strategy.setItems(itemsToPick) 
         return state, self.nitems, self.strategy.getActionsMask() 
 
+    def step(self, action):
+        self.strategy.setAction(action)
+        terminated = False 
+        truncated = False 
+        info = ''
+        actionsMask = self.strategy.getEmptyActionsMask()
+        avgPickTime = -1 
+        try:
+            if self.t > self.maxT:
+                raise Exception(f'the maximum simulation time of {self.maxT} steps reached')
+            
+            #Step returns the number of iterations. it's not important, but it's useful for debugging
+            _ = self.simulator.Step(self.t, self.componentsList)
+
+            actionsMask = self.strategy.getActionsMask() 
+            state = self.state 
+            reward = self.reward(state, False, False)
+            avgPickTime = 0# TODO self.components['sink'].avgPickTime()
+        
+            if self.components['sink'][0].countReceived == self.nitems:
+                terminated = True
+                reward = self.reward(state, True, False)
+        except Exception as e:
+            info = e 
+            state = self.state 
+            reward = self.reward(state, False, True)
+            truncated = True 
+        nitems = self.strategy.remaining_items
+        self.t += 1 
+        return state, reward, terminated, truncated, (info, nitems, actionsMask, avgPickTime)
+ 
     def getState(self):
         states = np.sum(self.componentsList[0].State()) / self.componentsList[0].Capacity()
         for c in self.componentsList[1:]:
