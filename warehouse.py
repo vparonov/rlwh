@@ -12,7 +12,7 @@ from source import Source, FIFO, SKIP
 from box import BoxListFromFile
 from simulator import Simulator
 
-PRINT_STACK_TRACE = True  
+PRINT_STACK_TRACE = False  
 
 class Warehouse:
     def __init__(self, name, fileName, datadir, randomFileSelect = False):
