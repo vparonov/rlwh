@@ -97,6 +97,7 @@ class Diverter:
     def Reset(self):
         if len(self.inputPlace) > 0:
             self.inputPlace.Remove()
+        self.transition.Reset()
         self.Start()
 
     def Transitions(self):

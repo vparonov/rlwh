@@ -78,6 +78,8 @@ class Agent:
                 if self.isSerial:
                        p.Enable() 
                 if not p.IsFull() and not p.IsDisabled():
+                    if inputPlace.IsEmpty():
+                        print(self.name, "inputPlace is empty")
                     v = inputPlace.Remove()
                     self.actionFn(v)
                     p.Add(v)
@@ -125,11 +127,16 @@ class Agent:
     def Capacity(self):
         return 1
 
+    def GetCurrentStatus(self):
+        return self.currentStatus
+    
     def Reset(self):
         self.waitTime = 0
         self.currentStatus = IDLE 
         if len(self.place) > 0:
             self.place.Remove()
+        self.inputTransition.Reset()
+        self.outputTransition.Reset()
         
     def Transitions(self):
         return [self.inputTransition, self.outputTransition]

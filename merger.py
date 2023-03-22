@@ -75,6 +75,7 @@ class Merger:
     def Reset(self):
         self.inputPlace.Remove()
         self.Start()
+        self.transition.Reset()
 
     def Transitions(self):
         return [self.transition]

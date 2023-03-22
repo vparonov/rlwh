@@ -1,14 +1,18 @@
 import json
-import random 
+import glob
+import random
+import traceback 
 import numpy as np
 
 from conveyor import Conveyor
 from diverter import Diverter, DIVERT, CONTINUE_STRAIGHT
-from agent import Agent
+from agent import Agent, BLOCKED
 from sink import Sink
 from source import Source, FIFO, SKIP
 from box import BoxListFromFile
 from simulator import Simulator
+
+PRINT_STACK_TRACE = True  
 
 class Warehouse:
     def __init__(self, name, fileName, datadir, randomFileSelect = False):
@@ -24,7 +28,7 @@ class Warehouse:
         self.action_space = ActionSpace([SKIP, FIFO])
         self.simulator = Simulator()
         self.build(fileName)
-
+        
     def build(self, fileName):
         with open(fileName) as f:
             data = json.load(f)
@@ -58,7 +62,8 @@ class Warehouse:
             elif type == 'agent':
                 newComponent = Agent(name = name, 
                                     delayFn = makeAgentDelayFn(c['minDelay'], c['maxDelay']), 
-                                    actionFn= makeAgentMarkPickedFn(c['markPicked']))
+                                    actionFn= makeAgentMarkPickedFn(c['markPicked']), 
+                                    maximumWaitTime=c['maxWaitingTime'])
                 self.stateSize += 1
             else:
                 print('Unknown component type:'+ type)
@@ -85,18 +90,30 @@ class Warehouse:
                 print('Connections. Unknown component type:'+ type)
 
         self.componentsList = [c[1][0] for c in sorted(components.items(), key=lambda cc: cc[1][-1])]
+
         self.components = components
     
     def getAgentsWaitingRatio(self):
-        raise Exception('Not implemented yet')
-    
+        ttl = 0 
+        ttl_blocked = 0 
+        for c in self.componentsList:
+            if type(c).__name__ == 'Agent':
+                currentStatus = c.GetCurrentStatus()
+                ttl +=1 
+                if currentStatus == BLOCKED:
+                    ttl_blocked += 1
+        if ttl > 0:
+            return float(ttl_blocked)/float(ttl)
+        else:
+            return 0 
+
     def reward(self, state, terminated, truncated):
         #return self.reward_min_processing_time(state, terminated, truncated)
         return self.reward_min_total_time(state, terminated, truncated)
     
     def reward_min_total_time(self, state, terminated, truncated):
         if terminated:
-            avgTotalProcessingTime =  self.t / self.components['sink'].State()[0]
+            avgTotalProcessingTime =  self.t / self.components['sink'][0].State()[0]
             if avgTotalProcessingTime > 0:
                 return 5.0/avgTotalProcessingTime
             else:
@@ -123,17 +140,19 @@ class Warehouse:
                 else:
                     itemsToPick.sort(reverse=True, key=lambda b: b.route)
 
-        for c in self.componentsList:
+        self.componentsList[0].Reset(itemsToPick)
+        for c in self.componentsList[1:]:
             c.Reset()
 
         for item in itemsToPick:
             item.Reset()
+        
+        self.simulator.Reset()
 
         state = self.getState() 
         self.t = 0
-        self.maxT = 20000#self.calcMaxT(itemsToPick)
+        self.maxT = 5000#self.calcMaxT(itemsToPick)
         self.nitems= len(itemsToPick)
-        self.strategy.setItems(itemsToPick) 
         return state, self.nitems, self.strategy.getActionsMask() 
 
     def step(self, action):
@@ -144,6 +163,7 @@ class Warehouse:
         actionsMask = self.strategy.getEmptyActionsMask()
         avgPickTime = -1 
         try:
+            #print(self.t, action)
             if self.t > self.maxT:
                 raise Exception(f'the maximum simulation time of {self.maxT} steps reached')
             
@@ -151,28 +171,41 @@ class Warehouse:
             _ = self.simulator.Step(self.t, self.componentsList)
 
             actionsMask = self.strategy.getActionsMask() 
-            state = self.state 
+            state = self.getState() 
             reward = self.reward(state, False, False)
             avgPickTime = 0# TODO self.components['sink'].avgPickTime()
         
-            if self.components['sink'][0].countReceived == self.nitems:
+            if self.components['sink'][0].CountReceived() == self.nitems:
                 terminated = True
                 reward = self.reward(state, True, False)
         except Exception as e:
-            info = e 
-            state = self.state 
+            if PRINT_STACK_TRACE:
+                stack_trace = traceback.format_exc()
+                print(stack_trace)
+            info = e
+            state = self.getState()
             reward = self.reward(state, False, True)
             truncated = True 
-        nitems = self.strategy.remaining_items
         self.t += 1 
-        return state, reward, terminated, truncated, (info, nitems, actionsMask, avgPickTime)
+        return state, reward, terminated, truncated, (info, int(state[0]), actionsMask, avgPickTime)
  
     def getState(self):
         states = np.sum(self.componentsList[0].State()) / self.componentsList[0].Capacity()
         for c in self.componentsList[1:]:
             states = np.hstack((states, np.sum(c.State()) / c.Capacity()))
-        return states
-        
+        return states.astype('float32')
+
+    def enumerateDataFiles(self, dataDir):
+        return glob.glob(f'{dataDir}/*.txt')
+
+    def sampleDataFiles(self):
+        if self.randomFileSelect:
+            return random.sample(self.datafiles, k=1)[0]
+        else:
+            f = self.datafiles[self.fileIx]
+            self.fileIx = (self.fileIx + 1) % len(self.datafiles)
+            return f
+
 # helper classes 
 class ActionSpace():
     def __init__(self, actions):
@@ -224,9 +257,16 @@ def makeAgentMarkPickedFn(station):
 
 
 if __name__ == '__main__':
+    from box import Box 
+
+    items = []
+    for i in range(100):
+        items.append(Box(i+1, 's', 3))
+
     wh = Warehouse('test', 'configurations/wh.json', None, False)
-    s = wh.getState()
-    print(s)
+    state, nitems, mask  = wh.reset(items)
+    print(state, nitems, mask)
 
-
-    
+    state, reward, terminated, truncated, (info, nitems, actionsMask, avgPickTime) = wh.step(FIFO)
+    print(state, reward, terminated, truncated)
+ 

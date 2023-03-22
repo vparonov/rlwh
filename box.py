@@ -1,11 +1,12 @@
 MAX_STATIONS = 2
 
 class Box:
-    def __init__(self, id, route, deadline = -1):
-        self.id = id
-        self.route = route
+    def __init__(self, id, type, route, deadline = -1):
+        self.id = int(id)
+        self.route = int(route)
+        self.type = type
         self.pickedMask = 0
-        self.deadline = deadline
+        self.deadline = int(deadline)
     
     def IsForStation(self, station):
         return ((self.route & (~self.pickedMask)) & (1 << (station-1))) != 0 

@@ -25,13 +25,15 @@ class Transition:
     
     def SetActionFn(self, actionFn):
         self.actionFn = actionFn
-        
+
     def ConnectPlaces(self, inputplace, outputplace):
         self.AddInputPlace(inputplace)
         self.AddOutputPlace(outputplace)
 
     # transactions
-
+    def Reset(self):
+        self.state = NOT_SCHEDULED 
+        
     def IsEnabled(self):
         for inputplace in self.inputPlaces:
             if not inputplace.IsEmpty():

@@ -20,6 +20,9 @@ class Sink:
         state = np.asarray([len(self.inputPlace)])
         return state
     
+    def CountReceived(self):
+        return len(self.inputPlace)
+    
     def Capacity(self):
         return 1 
 

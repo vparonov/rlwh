@@ -76,6 +76,7 @@ class Source:
     def Reset(self, values):
         self.inputPlace.SetValues(values) 
         self.currentAction = None 
+        self.transition.Reset()
 
     def ScheduleTransitions(self, scheduler, t):
         if self.transition.IsEnabled():

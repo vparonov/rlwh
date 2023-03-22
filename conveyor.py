@@ -117,6 +117,9 @@ class Conveyor:
         for place in self.places:
             if len(place) > 0:
                 place.Remove()
+                
+        for transition in self.transitions:
+            transition.Reset()
         self.Start()
 
     def Transitions(self):
