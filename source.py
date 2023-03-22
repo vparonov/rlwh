@@ -13,7 +13,7 @@ class Source:
         self.sourceFn = sourceFn
         self.inputPlace = None
         self.transition = None
-
+        self.initialCountOfValues = 0
         self.make()
         self.Reset(values)
 
@@ -63,8 +63,11 @@ class Source:
         state = np.asarray([len(self.inputPlace)])
         return state
     
+    def Count(self):
+        return len(self.inputPlace)
+    
     def Capacity(self):
-        return 1  
+        return self.initialCountOfValues 
     
     def Connect(self, nextPlace):
         _, countOutputPlaces = self.transition.CountPlaces()
@@ -74,10 +77,19 @@ class Source:
         self.transition.AddOutputPlace(nextPlace) 
 
     def Reset(self, values):
+        self.initialCountOfValues = len(values)
         self.inputPlace.SetValues(values) 
         self.currentAction = None 
         self.transition.Reset()
 
+    def DeepState(self):
+        state = np.zeros(self.initialCountOfValues)
+        ix = 0 
+        for b in self.inputPlace:
+            state[ix] = b.Id()
+            ix += 1
+        return state
+    
     def ScheduleTransitions(self, scheduler, t):
         if self.transition.IsEnabled():
             self.transition.ScheduleExecute(scheduler, t)

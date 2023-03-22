@@ -139,8 +139,11 @@ class Warehouse:
                     itemsToPick.sort(reverse=True, key=lambda b: 1 if b.route == 2 else 0 )
                 else:
                     itemsToPick.sort(reverse=True, key=lambda b: b.route)
-
+        # the first item is the source
         self.componentsList[0].Reset(itemsToPick)
+        # the last item is the sink
+        self.componentsList[-1].SetCapacity(len(itemsToPick))
+        
         for c in self.componentsList[1:]:
             c.Reset()
 
@@ -187,13 +190,19 @@ class Warehouse:
             reward = self.reward(state, False, True)
             truncated = True 
         self.t += 1 
-        return state, reward, terminated, truncated, (info, int(state[0]), actionsMask, avgPickTime)
+        return state, reward, terminated, truncated, (info, self.components['source'][0].Count(), actionsMask, avgPickTime)
  
     def getState(self):
         states = np.sum(self.componentsList[0].State()) / self.componentsList[0].Capacity()
         for c in self.componentsList[1:]:
             states = np.hstack((states, np.sum(c.State()) / c.Capacity()))
         return states.astype('float32')
+    
+    def GetDetailedState(self):
+        states = self.componentsList[0].DeepState()
+        for c in self.componentsList[1:]:
+            states = np.hstack((states, c.DeepState()))
+
 
     def enumerateDataFiles(self, dataDir):
         return glob.glob(f'{dataDir}/*.txt')

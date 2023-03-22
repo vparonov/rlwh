@@ -16,9 +16,20 @@ class Sink:
     def ScheduleTransitions(self, scheduler, t):
         pass 
 
+    def SetCapacity(self, capacity):
+        self.inputPlace.capacity = capacity
+
     def State(self):
         state = np.asarray([len(self.inputPlace)])
         return state
+    
+    def DeepState(self):
+        state = np.zeros(self.inputPlace.capacity)
+        ix = 0 
+        for b in self.inputPlace:
+            state[ix] = b.Id()
+            ix += 1
+        return state 
     
     def CountReceived(self):
         return len(self.inputPlace)
