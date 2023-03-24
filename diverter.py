@@ -70,8 +70,7 @@ class Diverter:
             self.transition.ScheduleExecute(scheduler, t)
 
     def State(self):
-        state = np.asarray([1 if not self.inputPlace.IsEmpty() else 0 ])
-        return state
+        return len(self.inputPlace)
 
     def DeepState(self):
         state = np.asarray([0 if self.inputPlace.IsEmpty() else self.inputPlace[0].Id()])

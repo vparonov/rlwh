@@ -117,8 +117,7 @@ class Agent:
             self.outputTransition.ScheduleExecute(scheduler, t)
 
     def State(self):
-        state = np.asarray([0 if self.place.IsEmpty() else 1])
-        return state
+        return len(self.place) 
     
     def DeepState(self):
         state = np.asarray([0 if self.place.IsEmpty() else self.place[0].Id()])

@@ -5,6 +5,7 @@ import traceback
 import numpy as np
 
 from conveyor import Conveyor
+from buffer import Buffer
 from diverter import Diverter, DIVERT, CONTINUE_STRAIGHT
 from agent import Agent, BLOCKED
 from sink import Sink
@@ -65,6 +66,11 @@ class Warehouse:
                                     actionFn= makeAgentMarkPickedFn(c['markPicked']), 
                                     maximumWaitTime=c['maxWaitingTime'])
                 self.stateSize += 1
+            elif type == 'buffer':
+                capacity = c['capacity'] 
+                newComponent = Buffer(name = name, 
+                                        capacity = capacity)
+                self.stateSize += capacity
             else:
                 print('Unknown component type:'+ type)
 
@@ -72,7 +78,7 @@ class Warehouse:
 
         for conn in data['connections']:
             component, type, _ = components[conn['from']]
-            if type == 'conveyor':
+            if type == 'conveyor' or type == 'buffer':
                 to, _, _ = components[conn['to']]
                 component.Connect(to.FirstPlace())
             elif type == 'diverter':
@@ -193,9 +199,9 @@ class Warehouse:
         return state, reward, terminated, truncated, (info, self.components['source'][0].Count(), actionsMask, avgPickTime)
  
     def getState(self):
-        states = np.sum(self.componentsList[0].State()) / self.componentsList[0].Capacity()
+        states = self.componentsList[0].State()
         for c in self.componentsList[1:]:
-            states = np.hstack((states, np.sum(c.State()) / c.Capacity()))
+            states = np.hstack((states, c.State()))
         return states.astype('float32')
     
     def GetDetailedState(self):

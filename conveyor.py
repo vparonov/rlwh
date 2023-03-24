@@ -86,8 +86,11 @@ class Conveyor:
                 self.transitions[i].ScheduleExecute(scheduler, t)
 
     def State(self):
-        state = np.asarray([1 if not p.IsEmpty() else 0 for p in self.places])
-        return state
+        cntFull = 0.0
+        for p in self.places:
+            if p.IsFull():
+                cntFull += 1
+        return cntFull / self.capacity
     
     def DeepState(self):
         state = np.asarray([0 if p.IsEmpty() else p[0].Id()  for p in self.places])

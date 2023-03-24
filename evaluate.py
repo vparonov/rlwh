@@ -26,13 +26,8 @@ datafiles = [
     '6_816boxes.txt'
 ]
 
-#w = Warehouse('test', 'files/wh1.txt', None)
-#w = Warehouse('test', 'files/wh1_deterministic_pickers.txt', None)
-#w = Warehouse('test', 'files/wh1_slower_agents.txt', None)
-w = Warehouse('test', 'configurations/wh.json', None)
-#w = Warehouse('test', 'files/wh1_combined_agents_p50_q5.txt', None)
-#w = Warehouse('test', 'files/wh1_faster_agents.txt', None)
-#w = Warehouse('test', 'files/wh1_even_slower_agents.txt', None)
+#w = Warehouse('test', 'configurations/wh.json', None)
+w = Warehouse('test', 'configurations/wh-stochastic.json', None)
 
 
 policies = [
@@ -44,7 +39,7 @@ policies = [
     #RLPolicy('models/best_robust_target.onnx'),
     #RLPolicy('models/best_robust_min_processing_time.onnx'),
     #RLPolicy('models/trained_policy_network_400.onnx'),
-    RLPolicy('models/trained_policy_network_500.onnx')
+    RLPolicy('models/trained_policy_network.onnx')
     ]
 
 policy_names = [

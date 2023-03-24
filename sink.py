@@ -20,8 +20,7 @@ class Sink:
         self.inputPlace.capacity = capacity
 
     def State(self):
-        state = np.asarray([len(self.inputPlace)])
-        return state
+        return len(self.inputPlace) / self.inputPlace.capacity
     
     def DeepState(self):
         state = np.zeros(self.inputPlace.capacity)

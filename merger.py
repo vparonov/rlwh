@@ -49,8 +49,7 @@ class Merger:
             self.transition.ScheduleExecute(scheduler, t)
 
     def State(self):
-        state = np.asarray([len(self.inputPlace)])
-        return state
+        return len(self.inputPlace) / self.capacity
     
     def DeepState(self):
         raise NotImplementedError
@@ -73,7 +72,7 @@ class Merger:
         return self.enabled == False
     
     def Reset(self):
-        self.inputPlace.Remove()
+        self.inputPlace.Clear()
         self.Start()
         self.transition.Reset()
 

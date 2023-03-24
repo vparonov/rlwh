@@ -60,8 +60,8 @@ class Source:
         self.transition.AddInputPlace(self.inputPlace)
 
     def State(self):
-        state = np.asarray([len(self.inputPlace)])
-        return state
+        return len(self.inputPlace) / self.capacity
+
     
     def Count(self):
         return len(self.inputPlace)
