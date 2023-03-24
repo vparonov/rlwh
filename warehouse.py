@@ -119,7 +119,7 @@ class Warehouse:
     
     def reward_min_total_time(self, state, terminated, truncated):
         if terminated:
-            avgTotalProcessingTime =  self.t / self.components['sink'][0].State()[0]
+            avgTotalProcessingTime =  self.t / self.components['sink'][0].Count()
             if avgTotalProcessingTime > 0:
                 return 5.0/avgTotalProcessingTime
             else:
@@ -160,7 +160,7 @@ class Warehouse:
 
         state = self.getState() 
         self.t = 0
-        self.maxT = 5000#self.calcMaxT(itemsToPick)
+        self.maxT = 10000#self.calcMaxT(itemsToPick)
         self.nitems= len(itemsToPick)
         return state, self.nitems, self.strategy.getActionsMask() 
 

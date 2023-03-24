@@ -13,10 +13,7 @@ class Buffer:
         self.make()
 
     def make(self) -> None:
-        def bufferTransitionFn(inputPlaces, outputPlaces, currentTime, phase):
-            if phase == PHASE_SECONDARY:
-                return BLOCKED
-            
+        def bufferTransitionFn(inputPlaces, outputPlaces, currentTime, phase):    
             if len(outputPlaces) == 0:
                 return FINISHED
             

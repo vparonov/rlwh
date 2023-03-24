@@ -18,7 +18,7 @@ class Simulator:
 if __name__ == "__main__":
     import numpy as np
     from conveyor import Conveyor
-    from diverter import Diverter, CONTINUE_STRAIGHT, DIVERT, FORWARD
+    from diverter import Diverter, CONTINUE_STRAIGHT, DIVERT, FORWARD, BACKWARD
     from box import Box
     from sink import Sink
     from source import Source, SKIP, FIFO 
@@ -42,36 +42,38 @@ if __name__ == "__main__":
         
     items = []
     for i in range(10):
-        items.append(Box(i, 3))
+        items.append(Box(i, 's', 3))
 
     source = Source('SOURCE', items, simpleSource())
     c1 = Conveyor('C1', 10, 0)
     s01 = Conveyor('S01', 5, 0)
     d1 = Diverter('D1', 
                   delay = 0, 
-                  type = FORWARD, 
+                  type= BACKWARD, 
                   selectorFn = lambda box: DIVERT if box.IsForStation(1) else CONTINUE_STRAIGHT)
     
     sink = Sink('SINK')
 
     source.Connect(c1.FirstPlace())
+    sink.SetCapacity(source.Capacity())
     c1.Connect(d1.FirstPlace())
     d1.Connect(sink.FirstPlace(), s01.FirstPlace())
 
     components = [source, c1, d1, s01, sink]
 
-    for t in range(23):
-        ok, iterations, e, = simulator.Step(t, components)
-        states = [np.sum(c.State())/c.Capacity() for c in components]
-        print(states)
-        if not ok:
+    for t in range(15):
+        try:
+            iterations = simulator.Step(t, components)
+            states = [np.sum(c.State())/c.Capacity() for c in components]
+            print(states)
+            print(t)
+            print(c1)
+            print(d1)
+            print(s01)
+            print(sink) 
+            if states[-1] == 1.0:
+                print('finished')
+                break 
+        except Exception as e:
             print(e)
-            break
-        print(t)
-        print(c1)
-        print(d1)
-        print(s01)
-        print(sink) 
-        if states[-1] == len(items):
-            print('finished')
             break 

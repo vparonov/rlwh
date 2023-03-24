@@ -54,7 +54,8 @@ class Diverter:
                 return BLOCKED
 
         self.inputPlace = Place(capacity=1)
-        self.transition = Transition(self.delayFn, diverterTransitionFn)
+        self.transition = Transition(self.delayFn, diverterTransitionFn, 
+                                     enableSecondaryPhase= self.type == FORWARD)
         self.transition.AddInputPlace(self.inputPlace)
 
     def Connect(self, nextPlaceStraight, nextPlaceDivert):

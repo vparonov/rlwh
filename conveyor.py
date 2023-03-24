@@ -2,7 +2,7 @@ import numpy as np
 
 from place import Place
 from transition import Transition
-from scheduler import BLOCKED, FINISHED, PHASE_SECONDARY
+from scheduler import BLOCKED, FINISHED
 
 BEGINNING = 0
 END = 1
@@ -21,10 +21,7 @@ class Conveyor:
         self.make()
 
     def make(self):
-        def conveyorTransitionFn(inputPlaces, outputPlaces, currentTime, phase):
-            if phase == PHASE_SECONDARY:
-                return BLOCKED
-            
+        def conveyorTransitionFn(inputPlaces, outputPlaces, currentTime, phase):        
             if len(outputPlaces) == 0:
                 return FINISHED
             

@@ -39,7 +39,7 @@ policies = [
     #RLPolicy('models/best_robust_target.onnx'),
     #RLPolicy('models/best_robust_min_processing_time.onnx'),
     #RLPolicy('models/trained_policy_network_400.onnx'),
-    RLPolicy('models/trained_policy_network.onnx')
+    RLPolicy('models/trained_policy_network_1000.onnx')
     ]
 
 policy_names = [

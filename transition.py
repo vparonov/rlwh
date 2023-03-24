@@ -6,12 +6,14 @@ SCHEDULED = 1
 class Transition:
     def __init__(self, 
                 delayFn = lambda : 0, 
-                actionFn = lambda inputPlaces, outputPlaces, phase: None):
+                actionFn = lambda inputPlaces, outputPlaces, phase: None, 
+                enableSecondaryPhase = False):
         self.inputPlaces = []
         self.outputPlaces = []
         self.delayFn = delayFn
         self.actionFn = actionFn
         self.state = NOT_SCHEDULED 
+        self.enableSecondaryPhase = enableSecondaryPhase
 
     # connections 
     def AddInputPlace(self, place):
@@ -20,20 +22,16 @@ class Transition:
     def AddOutputPlace(self, place):
         self.outputPlaces.append(place)    
 
-    def CountPlaces(self):
-        return len(self.inputPlaces), len(self.outputPlaces)
-    
     def SetActionFn(self, actionFn):
         self.actionFn = actionFn
-
-    def ConnectPlaces(self, inputplace, outputplace):
-        self.AddInputPlace(inputplace)
-        self.AddOutputPlace(outputplace)
 
     # transactions
     def Reset(self):
         self.state = NOT_SCHEDULED 
-        
+
+    def CountPlaces(self):
+        return len(self.inputPlaces), len(self.outputPlaces)
+              
     def IsEnabled(self):
         for inputplace in self.inputPlaces:
             if not inputplace.IsEmpty():
@@ -41,7 +39,7 @@ class Transition:
         return False
 
     def ScheduleExecute(self, scheduler, currentTime):
-        def action(executionTime, phase):
+        def action(executionTime, phase): 
             res = self.actionFn(self.inputPlaces, self.outputPlaces, executionTime, phase)
             if res == FINISHED:
                 self.state = NOT_SCHEDULED
@@ -50,6 +48,7 @@ class Transition:
         if self.state == SCHEDULED:
             return
         self.state = SCHEDULED
+        action.enableSecondaryPhase = self.enableSecondaryPhase
         scheduler.Enqueue(currentTime + self.delayFn(), task = action)
 
 if __name__ == "__main__":
@@ -85,9 +84,7 @@ if __name__ == "__main__":
     p1.Add('A')
     p2.Add('B')
 
-    transition.ConnectPlaces(p1, p2)
-    transition0.ConnectPlaces(p2, p3)
-  
+   
     for t in range(25):
         print(t) 
         scheduler.Execute(t)    

@@ -2,7 +2,7 @@ import numpy as np
 
 from transition import Transition
 from place import Place
-from scheduler import BLOCKED, FINISHED, PHASE_SECONDARY
+from scheduler import BLOCKED, FINISHED
 
 IDLE = 0
 WORKING = 1
@@ -41,14 +41,12 @@ class Agent:
         self.currentStatus = IDLE 
         self.waitTime = 0
         self.maximumWaitTime = maximumWaitTime
+        self.timeSet = set()
         self.make()
 
 
     def make(self): 
         def inputAgentTransitionFn(inputPlaces, outputPlaces, currentTime, phase):
-            if phase == PHASE_SECONDARY:
-                return BLOCKED
-
             outputPlace = outputPlaces[0]
 
             if outputPlace.IsFull() :
@@ -69,9 +67,6 @@ class Agent:
             return BLOCKED
 
         def outputAgentTransitionFn(inputPlaces, outputPlaces, currentTime, phase):
-            if phase == PHASE_SECONDARY:
-                return BLOCKED
-
             inputPlace = inputPlaces[0] 
 
             for p in outputPlaces:
@@ -87,7 +82,10 @@ class Agent:
                     return FINISHED
                 
             self.currentStatus = WAITING
-            self.waitTime += 1  
+            if currentTime not in self.timeSet:
+                self.waitTime += 1 
+                self.timeSet.add(currentTime)
+
             if self.maximumWaitTime > 0 and self.waitTime > self.maximumWaitTime:
                 raise Exception(f'Agent:{self.name} exceeded maximum wait time of {self.maximumWaitTime}')
             return BLOCKED
@@ -136,6 +134,7 @@ class Agent:
             self.place.Remove()
         self.inputTransition.Reset()
         self.outputTransition.Reset()
+        self.timeSet = set()
         
     def Transitions(self):
         return [self.inputTransition, self.outputTransition]

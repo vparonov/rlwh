@@ -35,6 +35,8 @@ class Scheduler:
         while someFinished:
             someFinished = False 
             for task in self.queue[at]:
+                if not task.enableSecondaryPhase:
+                    continue
                 iterations+=1
                 result = task(at, PHASE_SECONDARY)
                 if result == FINISHED:

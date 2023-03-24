@@ -1,7 +1,7 @@
 import numpy as np
 import random
 
-from scheduler import BLOCKED, FINISHED, PHASE_SECONDARY
+from scheduler import BLOCKED, FINISHED
 from place import Place
 from transition import Transition
 

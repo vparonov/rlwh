@@ -19,6 +19,9 @@ class Sink:
     def SetCapacity(self, capacity):
         self.inputPlace.capacity = capacity
 
+    def Count(self):
+        return len(self.inputPlace)
+    
     def State(self):
         return len(self.inputPlace) / self.inputPlace.capacity
     

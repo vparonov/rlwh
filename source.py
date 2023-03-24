@@ -60,7 +60,7 @@ class Source:
         self.transition.AddInputPlace(self.inputPlace)
 
     def State(self):
-        return len(self.inputPlace) / self.capacity
+        return len(self.inputPlace) / self.initialCountOfValues 
 
     
     def Count(self):
