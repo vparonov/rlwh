@@ -85,14 +85,14 @@ class ReplayMemory(object):
 
 
 BATCH_SIZE = 256
-GAMMA = 0.999999
+GAMMA = 0.9999
 EPS_START = 0.99   
-EPS_END = 0.01
-EPS_DECAY = 100000
-TAU = 0.005
+EPS_END = 0.1
+EPS_DECAY = 1000
+TAU = 0.001
 LR = 1e-4
-num_episodes = 2000
-memory = ReplayMemory(400000)
+num_episodes = 1000
+memory = ReplayMemory(200000)
 
 
 TRAINING_DIR = 'data/train_100_400_to_500_var'

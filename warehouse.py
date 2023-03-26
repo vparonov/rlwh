@@ -137,6 +137,10 @@ class Warehouse:
             fileName = self.sampleDataFiles()
             print(fileName)
             itemsToPick = BoxListFromFile(fileName)
+            lenItemsToPick = len(itemsToPick)
+            maxSample = random.randint(1, lenItemsToPick)
+            itemsToPick = itemsToPick[0:maxSample]
+            print(f'lenItemsToPick = {lenItemsToPick} maxSample = {maxSample}')
             if random.random() > 0.8:
                 sort = random.randint(0, 2)
                 if sort == 0 :
