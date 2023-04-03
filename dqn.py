@@ -87,11 +87,11 @@ class ReplayMemory(object):
 BATCH_SIZE = 256
 GAMMA = 0.9999
 EPS_START = 0.99   
-EPS_END = 0.1
-EPS_DECAY = 1000
-TAU = 0.001
+EPS_END = 0.14
+EPS_DECAY = 100000
+TAU = 0.0005
 LR = 1e-4
-num_episodes = 1000
+num_episodes = 1500
 memory = ReplayMemory(200000)
 
 
@@ -105,13 +105,13 @@ n_actions = env.action_space.n
 #reset without parameters randomly picks some of the files in data/train to load the items
 state, _,_ = env.reset()
 
-n_observations = len(state) - 2
+n_observations = len(state) - 2 - 10 + 2 
 
 # best policy_net = DQN(n_observations, n_actions).to(device)
 # best target_net = DQN(n_observations, n_actions).to(device)
 
-policy_net = DQN(n_observations, n_actions).to(device)
-target_net = DQN(n_observations, n_actions).to(device)
+policy_net = DQN256(n_observations, n_actions).to(device)
+target_net = DQN256(n_observations, n_actions).to(device)
 target_net.load_state_dict(policy_net.state_dict())
 
 optimizer = optim.AdamW(policy_net.parameters(), lr=LR, amsgrad=True)
@@ -215,7 +215,7 @@ for i_episode in range(num_episodes):
 
     state, _, actions_mask = env.reset()
     # the sink component's capacity = the number of items
-    normalizedState =  np.zeros(len(state)-2)
+    normalizedState =  np.zeros(len(state)-2-10+2)
 
     state = torch.tensor(normalizedState, dtype=torch.float32, device=device).unsqueeze(0)
 
@@ -231,7 +231,10 @@ for i_episode in range(num_episodes):
             next_state = None
         else:
             # exclude source and sink components 
-            normalizedState = observation[1:-1]
+            normalizedState[0:6] = observation[1:7]
+            normalizedState[6] = np.sum(observation[7:7+5]) / 5.0
+            normalizedState[7] = np.sum(observation[12:12+5]) / 5.0
+            normalizedState[8] = observation[7]
             next_state = torch.tensor(normalizedState, dtype=torch.float32, device=device).unsqueeze(0)
 
         # Store the transition in memory
