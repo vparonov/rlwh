@@ -11,6 +11,13 @@ def saveModelToOnnx(model, features, fileName):
                 input_names=['input'],
                 output_names=['output'])
 
+def saveLSTMModelToOnnx(model, time_steps, features, fileName):
+    x = torch.randn(1, time_steps, features, requires_grad=True)
+    _ = model(x)
+    torch.onnx.export(model, x, fileName, verbose=True, 
+                input_names=['input'],
+                output_names=['output'])
+
 
 def loadModelFromOnnx(fileName):
     return onnxruntime.InferenceSession(fileName)

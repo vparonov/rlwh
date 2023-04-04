@@ -1,6 +1,7 @@
 
 import torch.nn as nn
 import torch.nn.functional as F
+import torch 
 
 class DQN(nn.Module):
     def __init__(self, n_observations, n_actions):
@@ -13,6 +14,27 @@ class DQN(nn.Module):
         x = F.relu(self.layer1(x))
         x = F.relu(self.layer2(x))
         return self.layer3(x)
+
+
+class DQN_LSTM(nn.Module):
+    def __init__(self, n_observations, n_actions, hidden_size = 128): 
+        super(DQN_LSTM, self).__init__()
+        self.hidden_size = hidden_size
+        self.input_layer = nn.Linear(in_features= n_observations, out_features = hidden_size)
+        self.lstm_layer = nn.LSTM(input_size = hidden_size, hidden_size = hidden_size, batch_first = True)
+        self.output_layer = nn.Linear(in_features = hidden_size, out_features = n_actions)
+
+    def forward(self, x):
+        batch_size = x.shape[0]
+        x = self.input_layer(x)
+
+        hidden_state = torch.randn(1, batch_size, self.hidden_size)
+        cell_state = torch.randn(1, batch_size, self.hidden_size)
+        hidden = (hidden_state, cell_state)
+
+        out, hidden = self.lstm_layer(x, hidden)
+        out = out[:, -1, :]
+        return self.output_layer(out)
 
 class DQN256(nn.Module):
     def __init__(self, n_observations, n_actions):
