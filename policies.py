@@ -70,10 +70,11 @@ class StateFullHeuristicPolicy():
         self.coefC2 = coefC2
 
     def __call__(self, ctime, state, remaining_items):
+        ss = state[-1]
         if remaining_items == 0:
             return SKIP 
-        fill = (self.coefC1 * state[1] + self.coefC2 *
-                state[2]) / (self.coefC1 + self.coefC2)
+        fill = (self.coefC1 * ss[1] + self.coefC2 *
+                ss[2]) / (self.coefC1 + self.coefC2)
 
         if fill <= self.fillMargin:
             return FIFO

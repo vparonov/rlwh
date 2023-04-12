@@ -278,9 +278,9 @@ print('Complete')
 #saveModelToOnnx(target_net, n_observations, 'models/trained_policy_network.onnx')
 #saveModel(target_net, 'models/trained_policy_network.pt')
 
-saveModelToOnnx(policy_net, n_observations, 'models/trained_policy_network.onnx')
+saveLSTMModelToOnnx(policy_net, n_observations, 'models/trained_policy_network.onnx')
 saveModel(policy_net, 'models/trained_policy_network.pt')
-saveModelToOnnx(target_net, n_observations, 'models/trained_target_policy_network.onnx')
+saveLSTMModelToOnnx(target_net, n_observations, 'models/trained_target_policy_network.onnx')
 saveModel(target_net, 'models/trained_target_policy_network.pt')
 
 plot_rewards(show_result=True)
