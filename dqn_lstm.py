@@ -89,7 +89,7 @@ GAMMA = 0.9999
 EPS_START = 0.99   
 EPS_END = 0.14
 EPS_DECAY = 1000
-TAU = 0.001
+TAU = 0.005
 LR = 1e-4
 num_episodes = 1000
 memory = ReplayMemory(200000)
@@ -102,7 +102,7 @@ env = Warehouse('dqn_test', 'configurations/wh-stochastic.json', TRAINING_DIR, r
 # Get number of actions from gym action space
 n_actions = env.action_space.n
 
-time_steps = 5 
+time_steps = 5
 #reset without parameters randomly picks some of the files in data/train to load the items
 state, _,_ = env.reset()
 
@@ -111,8 +111,8 @@ n_observations = len(state) - 2 - 10 + 2
 # best policy_net = DQN(n_observations, n_actions).to(device)
 # best target_net = DQN(n_observations, n_actions).to(device)
 
-policy_net = DQN_LSTM(n_observations, n_actions).to(device)
-target_net = DQN_LSTM(n_observations, n_actions).to(device)
+policy_net = DQN_LSTM(n_observations, n_actions, hidden_size=64).to(device)
+target_net = DQN_LSTM(n_observations, n_actions, hidden_size=64).to(device)
 target_net.load_state_dict(policy_net.state_dict())
 
 optimizer = optim.AdamW(policy_net.parameters(), lr=LR, amsgrad=True)
@@ -278,9 +278,9 @@ print('Complete')
 #saveModelToOnnx(target_net, n_observations, 'models/trained_policy_network.onnx')
 #saveModel(target_net, 'models/trained_policy_network.pt')
 
-saveLSTMModelToOnnx(policy_net, n_observations, 'models/trained_policy_network.onnx')
+saveLSTMModelToOnnx(policy_net, time_steps,n_observations, 'models/trained_policy_network.onnx')
 saveModel(policy_net, 'models/trained_policy_network.pt')
-saveLSTMModelToOnnx(target_net, n_observations, 'models/trained_target_policy_network.onnx')
+saveLSTMModelToOnnx(target_net, time_steps, n_observations, 'models/trained_target_policy_network.onnx')
 saveModel(target_net, 'models/trained_target_policy_network.pt')
 
 plot_rewards(show_result=True)

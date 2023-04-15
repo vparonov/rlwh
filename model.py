@@ -26,7 +26,7 @@ class DQN_LSTM(nn.Module):
 
     def forward(self, x):
         batch_size = x.shape[0]
-        x = self.input_layer(x)
+        x = F.relu(self.input_layer(x))
 
         hidden_state = torch.randn(1, batch_size, self.hidden_size)
         cell_state = torch.randn(1, batch_size, self.hidden_size)

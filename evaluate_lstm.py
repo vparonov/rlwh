@@ -40,9 +40,9 @@ policies = [
 #    RLPolicy('models/best.onnx'), 
     #RLPolicy('models/best_robust_target.onnx'),
     #RLPolicy('models/best_robust_min_processing_time.onnx'),
-    RLPolicy('models/trained_policy_network_300.onnx'),
-    RLPolicy('models/trained_policy_network_500.onnx'),
-    RLPolicy('models/trained_policy_network_900.onnx')
+    RLPolicy('models/trained_policy_network_400.onnx'),
+    RLPolicy('models/trained_policy_network_600.onnx'),
+    RLPolicy('models/trained_policy_network.onnx')
     ]
 
 policy_names = [
@@ -54,9 +54,9 @@ policy_names = [
     #'latest_robust',
     #'min-per-item',
     #'latest 400 ep',
-    'RL300',
-    'RL500',
-    'RL900'
+    'RL400',
+    'RL600',
+    'RL1000'
 ]
 
 sorts = ['iid', '1,2,3', '2,1,3', '3,2,1']
