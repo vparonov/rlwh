@@ -70,7 +70,7 @@ class StateFullHeuristicPolicy():
         self.coefC2 = coefC2
 
     def __call__(self, ctime, state, remaining_items):
-        ss = state[-1]
+        ss = state
         if remaining_items == 0:
             return SKIP 
         fill = (self.coefC1 * ss[1] + self.coefC2 *
@@ -80,6 +80,22 @@ class StateFullHeuristicPolicy():
             return FIFO
         return SKIP
 
+class StateFullHeuristicPolicy_t():
+    def __init__(self, coefC1=10, coefC2=10, fillMargin=0.75):
+        self.fillMargin = fillMargin
+        self.coefC1 = coefC1
+        self.coefC2 = coefC2
+
+    def __call__(self, ctime, state, remaining_items):
+        ss = state[-1]
+        if remaining_items == 0:
+            return SKIP 
+        fill = (self.coefC1 * ss[1] + self.coefC2 *
+                ss[2]) / (self.coefC1 + self.coefC2)
+
+        if fill <= self.fillMargin:
+            return FIFO
+        return SKIP
 
 class RLPolicy():
     def __init__(self, fileName):

@@ -7,7 +7,7 @@ import numpy as np
 from conveyor import Conveyor
 from buffer import Buffer
 from diverter import Diverter, DIVERT, CONTINUE_STRAIGHT
-from agent import Agent, BLOCKED
+from agent import Agent, WORKING, WAITING
 from sink import Sink
 from source import Source, FIFO, SKIP
 from box import BoxListFromFile
@@ -99,17 +99,20 @@ class Warehouse:
 
         self.components = components
     
-    def getAgentsWaitingRatio(self):
+    def getAgentsStatus(self):
         ttl = 0 
         ttl_blocked = 0 
+        ttl_working = 0 
         for c in self.componentsList:
             if type(c).__name__ == 'Agent':
                 currentStatus = c.GetCurrentStatus()
                 ttl +=1 
-                if currentStatus == BLOCKED:
+                if currentStatus == WAITING:
                     ttl_blocked += 1
+                elif currentStatus == WORKING:
+                    ttl_working += 1 
         if ttl > 0:
-            return float(ttl_blocked)/float(ttl)
+            return float(ttl_blocked)/float(ttl), float(ttl_working)/float(ttl)
         else:
             return 0 
 
@@ -127,7 +130,10 @@ class Warehouse:
         elif truncated:
             return 0.0
         elif self.t > 0:
-            return -0.04 * self.getAgentsWaitingRatio()
+            waiting_ratio, working_ratio = self.getAgentsStatus()
+            #if waiting_ratio > 0 or working_ratio > 0:
+            #    print(f'waiting_ratio = {waiting_ratio} working_ratio = {working_ratio}')
+            return -0.08 * waiting_ratio # + 0.005 * working_ratio
         else:
             return 0.0
         
@@ -138,7 +144,7 @@ class Warehouse:
             print(fileName)
             itemsToPick = BoxListFromFile(fileName)
             #lenItemsToPick = len(itemsToPick)
-            #maxSample = random.randint(1, lenItemsToPick)
+            #maxSample = random.randint(10, lenItemsToPick)
             #itemsToPick = itemsToPick[0:maxSample]
             #print(f'lenItemsToPick = {lenItemsToPick} maxSample = {maxSample}')
             if random.random() > 0.8:

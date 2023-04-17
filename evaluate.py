@@ -26,8 +26,8 @@ datafiles = [
     '6_816boxes.txt'
 ]
 
-w = Warehouse('test', 'configurations/wh.json', None)
-#w = Warehouse('test', 'configurations/wh-stochastic.json', None)
+#w = Warehouse('test', 'configurations/wh.json', None)
+w = Warehouse('test', 'configurations/wh-stochastic.json', None)
 #w = Warehouse('test', 'configurations/wh-stochastic-2.json', None)
 
 
@@ -97,8 +97,8 @@ for ax, datafile in zip(axes.flat, datafiles):
             state, remaining_items, actions_mask = w.reset(items)
 
             
-            npstate = np.zeros(len(state)-2 - 10 + 2)
-            normalizedState =  np.zeros(len(state)- 2 - 10 + 2)
+            npstate = np.zeros(len(state)-2)
+            normalizedState =  np.zeros(len(state)- 2)
             fullInternalState = w.GetDetailedState()
 
             ctime = 0 
@@ -107,11 +107,8 @@ for ax, datafile in zip(axes.flat, datafiles):
                 action = policy(ctime, normalizedState, remaining_items)
                 state, reward, terminated, truncated, (info, remaining_items, actions_mask, avgPickTime) = w.step(action)
                 #print(ctime, reward, terminated, truncated)
-                normalizedState[0:6] = state[1:7]
-                normalizedState[6] = np.sum(state[7:7+5]) / 5.0
-                normalizedState[7] = np.sum(state[12:12+5]) / 5.0
-                normalizedState[8] = state[7]
-
+                normalizedState = state[1:-1]
+               
                 #normalizedState[0] = action 
                 npstate = np.vstack((npstate, normalizedState))
             
