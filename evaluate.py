@@ -27,8 +27,8 @@ datafiles = [
 ]
 
 #w = Warehouse('test', 'configurations/wh.json', None)
-w = Warehouse('test', 'configurations/wh-stochastic.json', None)
-#w = Warehouse('test', 'configurations/wh-stochastic-2.json', None)
+#w = Warehouse('test', 'configurations/wh-stochastic.json', None)
+w = Warehouse('test', 'configurations/wh-stochastic-2.json', None)
 
 
 policies = [
