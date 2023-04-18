@@ -4,7 +4,7 @@ import math
 #from utils import plot, getInternalStateAsNumPy, stateAsNumPy
 from warehouse import Warehouse
 from box import BoxListFromFile
-from policies import HeuristicPolicy, StateFullHeuristicPolicy, RLPolicy
+from policies import HeuristicPolicy, StateFullHeuristicPolicy_t, RLPolicy
 
 time_steps = 5
 
@@ -27,15 +27,15 @@ datafiles = [
     '6_816boxes.txt'
 ]
 
-w = Warehouse('test', 'configurations/wh.json', None)
+#w = Warehouse('test', 'configurations/wh.json', None)
 #w = Warehouse('test', 'configurations/wh-stochastic.json', None)
-#w = Warehouse('test', 'configurations/wh-stochastic-2.json', None)
+w = Warehouse('test', 'configurations/wh-stochastic-2.json', None)
 
 
 policies = [
     HeuristicPolicy(burstSize=1, waitBetweenBoxes = 0, waitBetweenBursts=0), 
 #    HeuristicPolicy(burstSize=5, waitBetweenBoxes = 1, waitBetweenBursts=8), 
-    StateFullHeuristicPolicy(coefC1 = 10, coefC2 = 10, fillMargin = 0.4), 
+    StateFullHeuristicPolicy_t(coefC1 = 10, coefC2 = 10, fillMargin = 0.4), 
 #    RLPolicy('models/best-old-reward-function.onnx'), 
 #    RLPolicy('models/best.onnx'), 
     #RLPolicy('models/best_robust_target.onnx'),
@@ -98,8 +98,8 @@ for ax, datafile in zip(axes.flat, datafiles):
             state, remaining_items, actions_mask = w.reset(items)
 
             
-            npstate = np.zeros((time_steps, len(state)-2 - 10 + 2))
-            normalizedState =  np.zeros((time_steps, len(state)-2-10+2))
+            npstate = np.zeros((time_steps, len(state)-2))
+            normalizedState =  np.zeros((time_steps, len(state)-2))
             fullInternalState = w.GetDetailedState()
 
             ctime = 0 
@@ -109,11 +109,8 @@ for ax, datafile in zip(axes.flat, datafiles):
                 state, reward, terminated, truncated, (info, remaining_items, actions_mask, avgPickTime) = w.step(action)
                 #print(ctime, reward, terminated, truncated)
                 normalizedState = np.roll(normalizedState, -1, 0)
-                normalizedState[-1][0:6] = state[1:7]
-                normalizedState[-1][6] = np.sum(state[7:7+5]) / 5.0
-                normalizedState[-1][7] = np.sum(state[12:12+5]) / 5.0
-                normalizedState[-1][8] = state[7]
-
+                normalizedState[-1] = state[1:-1]
+              
                 #normalizedState[0] = action 
                 npstate = np.vstack((npstate, normalizedState))
             

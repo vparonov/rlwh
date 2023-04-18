@@ -91,7 +91,7 @@ EPS_END = 0.14
 EPS_DECAY = 1000
 TAU = 0.001
 LR = 1e-4
-num_episodes = 1000
+num_episodes = 1500
 memory = ReplayMemory(200000)
 
 
@@ -106,7 +106,7 @@ time_steps = 5
 #reset without parameters randomly picks some of the files in data/train to load the items
 state, _,_ = env.reset()
 
-n_observations = len(state) - 2 - 10 + 2 
+n_observations = len(state) - 2
 
 # best policy_net = DQN(n_observations, n_actions).to(device)
 # best target_net = DQN(n_observations, n_actions).to(device)
@@ -216,7 +216,7 @@ for i_episode in range(num_episodes):
 
     state, _, actions_mask = env.reset()
     # the sink component's capacity = the number of items
-    normalizedState =  np.zeros((time_steps, len(state)-2-10+2))
+    normalizedState =  np.zeros((time_steps, len(state)-2))
 
     state = torch.tensor(normalizedState, dtype=torch.float32, device=device).unsqueeze(0)
 
@@ -233,10 +233,8 @@ for i_episode in range(num_episodes):
         else:
             # exclude source and sink components 
             normalizedState = np.roll(normalizedState, -1, 0)
-            normalizedState[-1, 0:6] = observation[1:7]
-            normalizedState[-1, 6] = np.sum(observation[7:7+5]) / 5.0
-            normalizedState[-1, 7] = np.sum(observation[12:12+5]) / 5.0
-            normalizedState[-1, 8] = observation[7]
+            normalizedState[-1] = observation[1:-1]
+            
             next_state = torch.tensor(normalizedState, dtype=torch.float32, device=device).unsqueeze(0)
 
         # Store the transition in memory
@@ -268,20 +266,20 @@ for i_episode in range(num_episodes):
             plot_rewards()
             break
     if i_episode % 100 == 0:
-        saveLSTMModelToOnnx(policy_net, time_steps,  n_observations, f'models/trained_policy_network_{i_episode}.onnx')
-        saveModel(policy_net, f'models/trained_policy_network_{i_episode}.pt')
-        saveLSTMModelToOnnx(target_net, time_steps, n_observations, f'models/trained_target_policy_network_{i_episode}.onnx')
-        saveModel(target_net, f'models/trained_target_policy_network_{i_episode}.pt')
+        saveLSTMModelToOnnx(policy_net, time_steps,  n_observations, f'models/trained_policy_network_lstm_{i_episode}.onnx')
+        saveModel(policy_net, f'models/trained_policy_network_lstm_{i_episode}.pt')
+        saveLSTMModelToOnnx(target_net, time_steps, n_observations, f'models/trained_target_policy_network_lstm_{i_episode}.onnx')
+        saveModel(target_net, f'models/trained_target_policy_network_lstm_{i_episode}.pt')
 
 print('Complete')
 
 #saveModelToOnnx(target_net, n_observations, 'models/trained_policy_network.onnx')
 #saveModel(target_net, 'models/trained_policy_network.pt')
 
-saveLSTMModelToOnnx(policy_net, time_steps,n_observations, 'models/trained_policy_network.onnx')
-saveModel(policy_net, 'models/trained_policy_network.pt')
-saveLSTMModelToOnnx(target_net, time_steps, n_observations, 'models/trained_target_policy_network.onnx')
-saveModel(target_net, 'models/trained_target_policy_network.pt')
+saveLSTMModelToOnnx(policy_net, time_steps,n_observations, 'models/trained_policy_network_lstm.onnx')
+saveModel(policy_net, 'models/trained_policy_network_lstm.pt')
+saveLSTMModelToOnnx(target_net, time_steps, n_observations, 'models/trained_target_policy_network_lstm.onnx')
+saveModel(target_net, 'models/trained_target_policy_network_lstm.pt')
 
 plot_rewards(show_result=True)
 plt.ioff()
