@@ -29,6 +29,7 @@ datafiles = [
 #w = Warehouse('test', 'configurations/wh.json', None)
 #w = Warehouse('test', 'configurations/wh-stochastic.json', None)
 w = Warehouse('test', 'configurations/wh-stochastic-2.json', None)
+#w = Warehouse('test', 'configurations/wh-stochastic-3.json', None)
 
 
 policies = [
@@ -39,9 +40,9 @@ policies = [
 #    RLPolicy('models/best.onnx'), 
     #RLPolicy('models/best_robust_target.onnx'),
     #RLPolicy('models/best_robust_min_processing_time.onnx'),
+    RLPolicy('models/best_trained_policy_network.onnx'),
     RLPolicy('models/trained_policy_network.onnx'),
-    RLPolicy('models/trained_policy_network_1400.onnx'),
-    RLPolicy('models/trained_policy_network_1200.onnx')
+    RLPolicy('models/trained_policy_network_1500.onnx')
     ]
 
 policy_names = [

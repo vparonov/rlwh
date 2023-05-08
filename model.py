@@ -64,10 +64,26 @@ class DQN64_64(nn.Module):
     def __init__(self, n_observations, n_actions):
         super(DQN64_64, self).__init__()
         self.layer1 = nn.Linear(n_observations, 64)
-        self.layer2 = nn.Linear(64, 64)
+        self.layer21 = nn.Linear(64, 64)
+        self.layer22 = nn.Linear(64, 64)
         self.layer3 = nn.Linear(64, n_actions)
 
     def forward(self, x):
         x = F.elu(self.layer1(x))
-        x = F.elu(self.layer2(x))
+        x = F.elu(self.layer21(x))
+        x = F.elu(self.layer22(x))
+        return self.layer3(x)
+
+class DQN128_128(nn.Module):
+    def __init__(self, n_observations, n_actions):
+        super(DQN128_128, self).__init__()
+        self.layer1 = nn.Linear(n_observations, 128)
+        self.layer21 = nn.Linear(128, 128)
+        self.layer22 = nn.Linear(128, 128)
+        self.layer3 = nn.Linear(128, n_actions)
+
+    def forward(self, x):
+        x = F.elu(self.layer1(x))
+        x = F.elu(self.layer21(x))
+        x = F.elu(self.layer22(x))
         return self.layer3(x)

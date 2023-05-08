@@ -18,7 +18,7 @@ import torch.nn.functional as F
 
 
 from warehouse import Warehouse
-from model import DQN, DQN64, DQN64_64, DQN256
+from model import DQN, DQN64, DQN64_64, DQN256, DQN128_128
 from utils import saveModel
 from onnxutils import saveModelToOnnx
 
@@ -87,11 +87,11 @@ class ReplayMemory(object):
 BATCH_SIZE = 256
 GAMMA = 0.9999
 EPS_START = 0.99   
-EPS_END = 0.14
+EPS_END = 0.01
 EPS_DECAY = 100000
 TAU = 0.001
 LR = 1e-4
-num_episodes = 1500
+num_episodes = 2000
 memory = ReplayMemory(200000)
 
 
@@ -110,8 +110,8 @@ n_observations = len(state) - 2
 # best policy_net = DQN(n_observations, n_actions).to(device)
 # best target_net = DQN(n_observations, n_actions).to(device)
 
-policy_net = DQN256(n_observations, n_actions).to(device)
-target_net = DQN256(n_observations, n_actions).to(device)
+policy_net = DQN(n_observations, n_actions).to(device)
+target_net = DQN(n_observations, n_actions).to(device)
 target_net.load_state_dict(policy_net.state_dict())
 
 optimizer = optim.AdamW(policy_net.parameters(), lr=LR, amsgrad=True)
