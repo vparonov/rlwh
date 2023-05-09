@@ -128,7 +128,7 @@ class Warehouse:
             else:
                 return 0.0
         elif truncated:
-            return 0.0
+            return -1.0
         elif self.t > 0:
             waiting_ratio, working_ratio = self.getAgentsStatus()
             #if waiting_ratio > 0 or working_ratio > 0:
@@ -144,8 +144,8 @@ class Warehouse:
             print(fileName)
             itemsToPick = BoxListFromFile(fileName)
             #lenItemsToPick = len(itemsToPick)
-            maxSample = 30
-            itemsToPick = itemsToPick[0:maxSample]
+            #maxSample = 30
+            #itemsToPick = itemsToPick[0:maxSample]
             #print(f'lenItemsToPick = {lenItemsToPick} maxSample = {maxSample}')
             if random.random() > 0.8:
                 sort = random.randint(0, 2)
@@ -195,8 +195,8 @@ class Warehouse:
             avgPickTime = 0# TODO self.components['sink'].avgPickTime()
         
             if self.components['sink'][0].CountReceived() == self.nitems:
-                terminated = True
                 reward = self.reward(state, True, False)
+                terminated = True
         except Exception as e:
             if PRINT_STACK_TRACE:
                 stack_trace = traceback.format_exc()

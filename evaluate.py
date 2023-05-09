@@ -27,8 +27,8 @@ datafiles = [
 ]
 
 #w = Warehouse('test', 'configurations/wh.json', None)
-#w = Warehouse('test', 'configurations/wh-stochastic.json', None)
-w = Warehouse('test', 'configurations/wh-stochastic-2.json', None)
+w = Warehouse('test', 'configurations/wh-stochastic.json', None)
+#w = Warehouse('test', 'configurations/wh-stochastic-2.json', None)
 #w = Warehouse('test', 'configurations/wh-stochastic-3.json', None)
 
 
@@ -55,8 +55,8 @@ policy_names = [
     #'min-per-item',
     #'latest 400 ep',
     'RL',
-    'RL1400',
-    'RL1200'
+    'RLlatest',
+    'RL1500'
 ]
 
 sorts = ['iid', '1,2,3', '2,1,3', '3,2,1']

@@ -23,6 +23,10 @@ class WarehouseEnv(gym.Env):
     def step(self, action):
         observation, reward, terminated, truncated, (info, _, _, _) = self.warehouse.step(action)
         done = terminated or truncated
+        if terminated:
+            print("ok->", reward)
+        if truncated:
+            print("failed->", reward)
         return observation[1:-1], reward, done, {}
 
     def reset(self, seed=None, options=None):
